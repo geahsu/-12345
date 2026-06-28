@@ -31,7 +31,16 @@
 .space-center{grid-column:2/5;grid-row:2/4;border:5px solid rgba(255,255,255,.8);border-radius:22px;background:rgba(0,0,0,.58);color:white;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:16px;text-shadow:0 2px 6px #000}
 .space-center h1{color:white;font-size:32px;margin:0 0 8px}
 
-.helper-npc-token{width:26px;height:32px;border-radius:12px 12px 7px 7px;background:linear-gradient(#fff,#ffd166 35%,#ef476f 36%,#7c2d12);border:2px solid #2b1b0c;display:inline-flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 3px 8px rgba(0,0,0,.35);animation:helperBounce .7s infinite alternate}.helper-npc-token::before{content:'人'}.helper-follow-badge{display:inline-block;background:#fff3bf;border:2px solid #f59e0b;border-radius:999px;padding:3px 7px;margin:2px;font-size:12px;font-weight:900;color:#7c2d12}.helper-event{background:linear-gradient(135deg,#fff7ad,#f59e0b,#ef4444);color:#401a00;border:3px solid white;border-radius:16px;padding:10px;margin:8px 0;font-weight:900;text-align:center;animation:helperBounce .7s infinite alternate}@keyframes helperBounce{from{transform:translateY(0)}to{transform:translateY(-4px)}}</style>
+.helper-npc-token{width:26px;height:32px;border-radius:12px 12px 7px 7px;background:linear-gradient(#fff,#ffd166 35%,#ef476f 36%,#7c2d12);border:2px solid #2b1b0c;display:inline-flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 3px 8px rgba(0,0,0,.35);animation:helperBounce .7s infinite alternate}.helper-npc-token::before{content:'人'}.helper-follow-badge{display:inline-block;background:#fff3bf;border:2px solid #f59e0b;border-radius:999px;padding:3px 7px;margin:2px;font-size:12px;font-weight:900;color:#7c2d12}.helper-event{background:linear-gradient(135deg,#fff7ad,#f59e0b,#ef4444);color:#401a00;border:3px solid white;border-radius:16px;padding:10px;margin:8px 0;font-weight:900;text-align:center;animation:helperBounce .7s infinite alternate}@keyframes helperBounce{from{transform:translateY(0)}to{transform:translateY(-4px)}}
+.all-positions-box{background:#f8fafc;border:2px solid #94a3b8;border-radius:14px;padding:10px;margin:8px 0}
+.position-row{display:flex;align-items:center;gap:7px;background:white;border:1px solid #cbd5e1;border-radius:12px;padding:7px;margin:5px 0;font-size:13px}
+.position-row.current-turn{border:3px solid #22c55e;background:#ecfdf5;font-weight:900}
+.position-row.me{box-shadow:0 0 0 3px rgba(59,130,246,.25)}
+.position-text{line-height:1.35}
+.map-badge{display:inline-block;border-radius:999px;padding:2px 7px;font-size:11px;font-weight:900;margin-left:4px;background:#e0f2fe;color:#075985}
+.map-badge.space{background:#fde68a;color:#78350f}
+
+</style>
 </head>
 <body>
 <header><div class="logo">台灣景點富豪戰｜真正多人頭像版</div><div class="badge" id="connectStatus">尚未連線 Firebase</div></header>
@@ -41,7 +50,7 @@
 <section id="lobbyPanel" class="grid2 hidden"><div class="card"><h1>真人房間大廳</h1><div class="notice ok">沒有 AI，沒有假房間。只有真人建立的房間才會出現。</div><label>你的名字</label><input id="playerName" placeholder="輸入你的名字"><label>選擇你的頭像</label><div id="avatarPicker" class="avatar-grid"></div><button class="green" onclick="createRoom()">建立房間</button><label>加入房間碼</label><input id="joinCode" placeholder="例如 8362" maxlength="4"><button class="blue" onclick="joinRoomByInput()">加入房間</button><div id="myRoomBox" class="notice hidden"></div></div><div class="card"><h2>目前真人建立的房間</h2><div id="roomList" class="room-list"><div class="empty">讀取中...</div></div></div></section>
 <section id="roomPanel" class="card hidden" style="margin-top:14px;"><h2>房間等待區</h2><div id="waitingRoomInfo"></div></section>
 <section id="roomCodeBanner" class="room-banner hidden"><div>你目前在這個房間：</div><div class="big-room" id="roomCodeBig">----</div><div class="hint">把這個房間碼給朋友，朋友輸入後才能加入。</div><button class="light" id="copyRoomCodeTopBtn">複製房間碼</button></section>
-<section class="game-grid hidden" id="gamePanel" style="margin-top:14px;"><div class="panel"><div id="board" class="board"></div></div><div class="panel"><div class="side-section"><h2>操作</h2><div id="turnInfo"></div><div class="dice-row"><div class="die" id="die1">-</div><div class="die" id="die2">-</div></div><button class="green" id="rollBtn" onclick="rollDice()">骰兩顆骰子</button><button class="blue" id="buyBtn" onclick="buyLand()" disabled>購買這塊地</button><button class="green" id="buildBtn" onclick="buildHouse()" disabled>蓋房子</button><button id="skipBuyBtn" onclick="skipBuy()" disabled>不買</button><button class="red" onclick="leaveRoom()">退出房間</button></div><div class="side-section"><h2>目前要付的錢</h2><div id="paymentInfo">目前沒有要付錢。</div></div><div class="side-section"><h2>景點爆笑 / 鬼屋詛咒 / 火箭班20格事件</h2><div id="crazyEventBox">目前沒有爆笑或詛咒事件。</div></div><div class="side-section"><h2>玩家狀態</h2><div id="playersBox"></div></div><div class="side-section"><h2>已購買土地</h2><div class="land-list" id="ownedLands"></div></div><div class="side-section"><h2>遊戲紀錄</h2><div id="logs"></div></div></div></section>
+<section class="game-grid hidden" id="gamePanel" style="margin-top:14px;"><div class="panel"><div id="board" class="board"></div></div><div class="panel"><div class="side-section"><h2>操作</h2><div id="turnInfo"></div><div class="dice-row"><div class="die" id="die1">-</div><div class="die" id="die2">-</div></div><button class="green" id="rollBtn" onclick="rollDice()">骰兩顆骰子</button><button class="blue" id="buyBtn" onclick="buyLand()" disabled>購買這塊地</button><button class="green" id="buildBtn" onclick="buildHouse()" disabled>蓋房子</button><button id="skipBuyBtn" onclick="skipBuy()" disabled>不買</button><button class="red" onclick="leaveRoom()">退出房間</button></div><div class="side-section"><h2>目前要付的錢</h2><div id="paymentInfo">目前沒有要付錢。</div></div><div class="side-section"><h2>景點爆笑 / 鬼屋詛咒 / 火箭班20格事件</h2><div id="crazyEventBox">目前沒有爆笑、詛咒或位置事件。</div></div><div class="side-section"><h2>玩家狀態</h2><div id="playersBox"></div></div><div class="side-section"><h2>已購買土地</h2><div class="land-list" id="ownedLands"></div></div><div class="side-section"><h2>遊戲紀錄</h2><div id="logs"></div></div></div></section>
 </main>
 <div class="modal" id="chanceModal"><div class="modal-card"><h2>抽到景點爆笑卡 / 鬼屋詛咒卡</h2><div class="chance-card" id="chanceText"></div><button class="green" onclick="closeModal('chanceModal')">確定</button></div></div>
 <div class="modal" id="wheelModal"><div class="modal-card"><h2>轉動轉盤</h2><div class="wheel-wrap"><div class="pointer"></div><div class="wheel-disc" id="wheelDisc"></div><div class="chance-card" id="wheelText">轉盤轉動中...</div><button class="green" onclick="closeModal('wheelModal')">確定</button></div></div></div>
@@ -257,7 +266,7 @@ function renderGame(){renderBoard();renderSide()} function renderBoard(){
     const land=s.type==='property'?currentRoom.properties?.['land'+s.id]:null;
     const ownerName=land&&land.owner?currentRoom.players?.[land.owner]?.name:'';
     const here=getActivePlayers().filter(p=>!p.spaceMap&&p.position===s.id);
-    div.innerHTML=`<div><div class="name">${s.id}. ${escapeHtml(s.name)}</div>${s.tier?`<div class="price">${escapeHtml(s.tier)}</div>`:''}${s.price?`<div class="price">$${s.price} / 租 $${s.rent}</div>`:''}${s.amount&&s.type!=='corner'?`<div class="price">$${s.amount}</div>`:''}${s.desc?`<div class="price">${escapeHtml(s.desc)}</div>`:''}${ownerName?`<div class="owner-tag">主人：${escapeHtml(ownerName)}｜房子 ${land?.houses||0}/5</div>`:''}</div><div class="tokens">${currentRoom.helperNpc&&currentRoom.helperNpc.tileId===s.id?'<span title="加速路人夥伴" class="helper-npc-token"></span>':''}${here.map(p=>`<img title="${escapeHtml(p.name)}" class="avatar-token" src="${getAvatar(p.avatarIndex).src}" alt="${escapeHtml(p.name)}">`).join('')}</div>`;
+    div.innerHTML=`<div><div class="name">${s.id}. ${escapeHtml(s.name)}</div>${s.tier?`<div class="price">${escapeHtml(s.tier)}</div>`:''}${s.price?`<div class="price">$${s.price} / 租 $${s.rent}</div>`:''}${s.amount&&s.type!=='corner'?`<div class="price">$${s.amount}</div>`:''}${s.desc?`<div class="price">${escapeHtml(s.desc)}</div>`:''}${ownerName?`<div class="owner-tag">主人：${escapeHtml(ownerName)}｜房子 ${land?.houses||0}/5</div>`:''}</div><div class="tokens">${currentRoom.helperNpc&&currentRoom.helperNpc.tileId===s.id?'<span title="加速路人夥伴" class="helper-npc-token"></span>':''}${here.map(p=>`<img title="${escapeHtml(p.name)}｜${escapeHtml(getPlayerLocationText(p,currentRoom))}" class="avatar-token" src="${getAvatar(p.avatarIndex).src}" alt="${escapeHtml(p.name)}">`).join('')}</div>`;
     board.appendChild(div)
   });
   const p=cp||me(),tile=getSpaceForRoom(currentRoom,p?.position||0);
@@ -271,13 +280,34 @@ function renderSpaceMapBoard(board,p){
   for(let i=0;i<SPACE_MAP_SIZE;i++){
     const div=document.createElement('div');
     div.className='space-cell '+(isSun?'sun':'moon')+(i===(p.spacePosition||0)?' current':'');
-    div.innerHTML=`<div><div class="space-name">${i+1}. ${isSun?'太陽扣錢命運':'月球好命運'}</div><div class="space-desc">${escapeHtml(isSun?'每格都是扣錢命運':'每格都是好命運')}</div></div><div class="tokens">${i===(p.spacePosition||0)?`<img title="${escapeHtml(p.name)}" class="avatar-token" src="${getAvatar(p.avatarIndex).src}" alt="${escapeHtml(p.name)}">`:''}</div>`;
+    div.innerHTML=`<div><div class="space-name">${i+1}. ${isSun?'太陽扣錢命運':'月球好命運'}</div><div class="space-desc">${escapeHtml(isSun?'每格都是扣錢命運':'每格都是好命運')}</div></div><div class="tokens">${i===(p.spacePosition||0)?`<img title="${escapeHtml(p.name)}｜${escapeHtml(getPlayerLocationText(p,currentRoom))}" class="avatar-token" src="${getAvatar(p.avatarIndex).src}" alt="${escapeHtml(p.name)}">`:''}</div>`;
     board.appendChild(div)
   }
   const center=document.createElement('div');center.className='space-center';
   center.innerHTML=`<h1>${isSun?'☀️':'🌙'} ${title}</h1><div>${escapeHtml(p.name)} 目前在第 ${(p.spacePosition||0)+1} / 20 格</div><div style="margin-top:8px;">${isSun?'太陽地圖：每一格都是扣錢命運。':'月球地圖：每一格都是好的命運。'}</div><div style="margin-top:8px;">走完20格就回到真正的大富翁主地圖。</div>`;
   board.appendChild(center)
 }
+
+function renderAllPlayerPositions(){
+  if(!currentRoom) return '';
+  const pNow = currentPlayer();
+  const rows = getActivePlayers().map(p=>{
+    const isNow = pNow && pNow.id === p.id;
+    const isMe = p.id === myPlayerId;
+    const loc = getPlayerLocationText(p,currentRoom);
+    const badge = p.spaceMap ? '<span class="map-badge space">副地圖</span>' : '<span class="map-badge">主地圖</span>';
+    return `<div class="position-row ${isNow?'current-turn':''} ${isMe?'me':''}">
+      ${avatarHtml(p.avatarIndex)}
+      <div class="position-text">
+        <b>${escapeHtml(p.name)}${isMe?'（你）':''}${isNow?'｜現在輪到他':''}</b>${badge}<br>
+        ${escapeHtml(loc)}<br>
+        金錢：$${p.money??0}${p.helperFollower?'｜加速夥伴 +3':''}
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="all-positions-box"><b>所有玩家現在在哪裡</b>${rows}</div>`;
+}
+
 function renderSide(){
   const p=currentPlayer(),m=me();
   document.getElementById('die1').textContent=currentRoom.dice?.[0]||'-';
@@ -286,7 +316,7 @@ function renderSide(){
   document.getElementById('paymentInfo').innerHTML=getPaymentText();
   const crazyBox=document.getElementById('crazyEventBox');
   if(crazyBox){crazyBox.innerHTML=currentRoom.lastCrazyEvent?`<div class="${currentRoom.lastCrazyEvent.includes('夥伴')||currentRoom.lastCrazyEvent.includes('路人')?'helper-event':(currentRoom.lastCrazyEvent.includes('火箭')||currentRoom.lastCrazyEvent.includes('太陽')||currentRoom.lastCrazyEvent.includes('月球')?'space-event':(currentRoom.lastCrazyEvent.includes('詛咒')||currentRoom.lastCrazyEvent.includes('鬼')?'curse-event':'crazy-event'))}">${escapeHtml(currentRoom.lastCrazyEvent)}</div>`:'目前沒有爆笑或詛咒事件。'}
-  document.getElementById('playersBox').innerHTML=getPlayers().map(player=>{const owned=Object.values(currentRoom.properties||{}).filter(l=>l.owner===player.id).length,active=p&&p.id===player.id,isMe=player.id===myPlayerId;return `<div class="player-card ${active?'active':''} ${isMe?'me':''} ${player.lost?'lost':''}"><b>${active?'▶ ':''}${avatarHtml(player.avatarIndex)} ${escapeHtml(player.name)} ${isMe?'（你）':''}</b><span class="statue-token ${player.statue?.gender||'male'}"></span>${player.lost?'（輸了）':''}<br>${player.online?'在線':'離線'}｜雕像：${escapeHtml(player.statue?.label||'-')}<br>金錢：$${player.money??0}<br>目前：${escapeHtml(getPlayerLocationText(player,currentRoom))}<br>已買土地：${owned} 塊<br>${player.helperFollower?'<span class="helper-follow-badge">加速夥伴跟隨中：骰骰子 +3 格</span>':''}</div>`}).join('');
+  document.getElementById('playersBox').innerHTML=renderAllPlayerPositions()+getPlayers().map(player=>{const owned=Object.values(currentRoom.properties||{}).filter(l=>l.owner===player.id).length,active=p&&p.id===player.id,isMe=player.id===myPlayerId;return `<div class="player-card ${active?'active':''} ${isMe?'me':''} ${player.lost?'lost':''}"><b>${active?'▶ ':''}${avatarHtml(player.avatarIndex)} ${escapeHtml(player.name)} ${isMe?'（你）':''}</b><span class="statue-token ${player.statue?.gender||'male'}"></span>${player.lost?'（輸了）':''}<br>${player.online?'在線':'離線'}｜雕像：${escapeHtml(player.statue?.label||'-')}<br>金錢：$${player.money??0}<br>目前：${escapeHtml(getPlayerLocationText(player,currentRoom))}<br>已買土地：${owned} 塊<br>${player.helperFollower?'<span class="helper-follow-badge">加速夥伴跟隨中：骰骰子 +3 格</span>':''}</div>`}).join('');
   const owned=Object.values(currentRoom.properties||{}).filter(l=>l.owner);
   document.getElementById('ownedLands').innerHTML=owned.length?owned.map(l=>{const owner=currentRoom.players?.[l.owner];return `<div class="land-row"><b>${escapeHtml(l.name)}</b><br>主人：${escapeHtml(owner?.name||'-')}｜租金：$${getRentWithHouses(l)}｜房子：${l.houses||0}/5</div>`}).join(''):'目前還沒有人買地。';
   document.getElementById('logs').innerHTML=(currentRoom.logs||[]).slice(0,16).map(log=>`<div class="log">${escapeHtml(log)}</div>`).join('');
@@ -422,3 +452,4 @@ function maybeShowLastEvent(){const ev=currentRoom?.lastEvent;if(!ev||!ev.id||ev
 function closeModal(id){document.getElementById(id).classList.remove('show')}
 </script>
 </body></html>
+
